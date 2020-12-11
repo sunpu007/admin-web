@@ -1,4 +1,6 @@
-import { constantRoutes } from '@/router';
+import { constantRoutes } from '@/router'
+
+import Layout from '@/layout'
 
 /**
  * Filter asynchronous routing tables by recursion
@@ -30,7 +32,6 @@ export function filterAsyncRoutes(routers) {
 const loadView = (view) => {
   return resolve => require([`@/views/${view}`], resolve)
 }
-
 
 const state = {
   routes: [],
