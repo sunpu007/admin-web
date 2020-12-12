@@ -148,7 +148,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   {
     path: 'external-link',
     component: Layout,
@@ -156,6 +155,28 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: { title: 'External Link', icon: 'link' }
+      }
+    ]
+  },
+
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/admin',
+    name: 'System',
+    meta: {
+      title: 'system',
+      icon: 'setting'
+    },
+    children: [
+      {
+        path: 'admin',
+        name: 'Admin',
+        component: () => import('@/views/system/admin'),
+        meta: {
+          title: 'systemAdmin',
+          icon: 'admin'
+      }
       }
     ]
   }
