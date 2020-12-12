@@ -157,28 +157,6 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  },
-
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system/admin',
-    name: 'System',
-    meta: {
-      title: 'system',
-      icon: 'setting'
-    },
-    children: [
-      {
-        path: 'admin',
-        name: 'Admin',
-        component: () => import('@/views/system/admin'),
-        meta: {
-          title: 'systemAdmin',
-          icon: 'admin'
-      }
-      }
-    ]
   }
 ]
 
