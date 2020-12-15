@@ -8,7 +8,7 @@
       <el-table-column align="center" prop="username" label="用户名" />
       <el-table-column align="center" prop="avatarUrl" label="头像">
         <template slot-scope="{row}">
-           <el-image style="width: 50px; height: 50px" :src="row.avatarUrl" fit="cover" />
+          <el-image style="width: 50px; height: 50px" :src="row.avatarUrl" fit="cover" />
         </template>
       </el-table-column>
       <el-table-column align="center" prop="roleName" label="角色" />
@@ -26,10 +26,12 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作">
-        <template slot-scope="{row}" v-if="row.adminId!==1">
-          <el-button type="text" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="text" @click="delAdmin(row)">删除</el-button>
-          <el-button type="text" @click="resetPwd(row)">重置密码</el-button>
+        <template slot-scope="{row}">
+          <template v-if="row.adminId!==1">
+            <el-button type="text" @click="handleEdit(row)">编辑</el-button>
+            <el-button type="text" @click="delAdmin(row)">删除</el-button>
+            <el-button type="text" @click="resetPwd(row)">重置密码</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -84,7 +86,7 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      const { code, data } = await getAdminList();
+      const { code, data } = await getAdminList()
       this.listLoading = false
       if (code === 0) {
         this.list = data.list
