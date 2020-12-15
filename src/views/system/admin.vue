@@ -44,7 +44,7 @@
           <el-input v-model="formData.avatarUrl" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="角色">
-          <el-select v-model="formData.role_id" placeholder="角色">
+          <el-select v-model="formData.roleId" placeholder="角色">
             <el-option v-for="item in roleLists" :key="item.role_id" :label="item.name" :value="item.role_id" />
           </el-select>
         </el-form-item>
