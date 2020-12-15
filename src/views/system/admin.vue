@@ -45,7 +45,7 @@
         </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="formData.role_id" placeholder="角色">
-            <el-option v-for="item in roleList" :key="item.role_id" :label="item.name" :value="item.role_id" />
+            <el-option v-for="item in roleLists" :key="item.role_id" :label="item.name" :value="item.role_id" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -77,7 +77,7 @@ export default {
         username: { required: true, message: '请输入用户名', trigger: 'blur' }
       },
 
-      roleList: []
+      roleLists: []
     }
   },
   created() {
