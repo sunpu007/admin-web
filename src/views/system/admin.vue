@@ -59,7 +59,7 @@
 
 <script>
 import waves from '@/directive/waves'
-import { getAdminList, editAdmin, delAdmin, resetPassword } from '@/api/system'
+import { getAdminList, editAdmin, delAdmin, resetPassword, roleList } from '@/api/system'
 export default {
   directives: { waves },
   data() {
@@ -79,6 +79,9 @@ export default {
 
       roleList: []
     }
+  },
+  created() {
+    this.getRoleList()
   },
   mounted() {
     this.getList()
@@ -158,6 +161,12 @@ export default {
           })
         }
       })
+    },
+    async getRoleList() {
+      const { code, data } = await roleList()
+      if (code === 0) {
+        this.roleLists = data.list
+      }
     }
   }
 }
