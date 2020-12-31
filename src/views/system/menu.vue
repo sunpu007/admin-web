@@ -12,6 +12,11 @@
       </el-table-column>
       <el-table-column align="center" prop="menu_sort" label="排序" />
       <el-table-column align="center" prop="component" label="组建路径" />
+      <el-table-column align="center" label="是否隐藏">
+        <template slot-scope="{row}">
+          {{ !!row.hidden }}
+        </template>
+      </el-table-column>
       <el-table-column align="center" prop="create_by" label="创建人" />
       <el-table-column align="center" label="创建时间">
         <template slot-scope="{row}">
@@ -64,6 +69,12 @@
         </el-form-item>
         <el-form-item label="排序" prop="menu_sort">
           <el-input-number v-model="formData.menu_sort" style="width: 100%" type="number" placeholder="请输入菜单排序" />
+        </el-form-item>
+        <el-form-item label="是否隐藏">
+          <el-select v-model="formData.hidden" placeholder="请选择是否显示">
+            <el-option label="显示" :value="0" />
+            <el-option label="隐藏" :value="1" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div style="text-align:right;">
