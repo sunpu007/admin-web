@@ -1,13 +1,24 @@
 <template>
   <div class="dashboard-container">
-    <el-row :gutter="20">
-      <el-col :span="8">
-        <div id="cpuChart" style="width: 250px;height: 250px" />
-      </el-col>
-      <el-col :span="8">
-        <div id="menChart" style="width: 250px;height: 250px" />
-      </el-col>
-    </el-row>
+    <el-card class="box-card">
+      <!-- <b>系统:</b><span class="system-text">GNU/Linux Debian GNU/Linux 8 (jessie) build 4.15.0-48-generic </span> -->
+      <b>系统时间:</b><span class="system-text">{{ data.date }}</span>
+      <b>系统运行时间:</b><span class="system-text">{{ data.time }}</span>
+    </el-card> 
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <b>状态</b>
+      </div>
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <div id="cpuChart" style="width: 250px;height: 250px" />
+        </el-col>
+        <el-col :span="8">
+          <div id="menChart" style="width: 250px;height: 250px" />
+        </el-col>
+      </el-row>
+    </el-card>
+    
   </div>
 </template>
 
@@ -125,6 +136,16 @@ export default {
   &-text {
     font-size: 30px;
     line-height: 46px;
+  }
+}
+
+.box-card {
+  font-size: 14px;
+  margin-bottom: 20px;
+  .system-text {
+    font-size: 12px;
+    margin-left: 5px;
+    margin-right: 30px;
   }
 }
 </style>
