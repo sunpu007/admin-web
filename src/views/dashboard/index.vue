@@ -1,6 +1,13 @@
 <template>
   <div class="dashboard-container">
-    <div id="cpuChart" style="width: 250px;height: 250px" />
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <div id="cpuChart" style="width: 250px;height: 250px" />
+      </el-col>
+      <el-col :span="8">
+        <div id="menChart" style="width: 250px;height: 250px" />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -12,10 +19,12 @@ export default {
   name: 'Dashboard',
   data() {
     return {
-      chart: null,
+      cpuChart: null,
+      menChart: null,
 
       data: {
-        cpu: {}
+        cpu: {},
+        mem: {}
       }
     }
   },
@@ -39,10 +48,11 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(document.getElementById('cpuChart'))
+      this.cpuChart = echarts.init(document.getElementById('cpuChart'))
+      this.menChart = echarts.init(document.getElementById('menChart'))
     },
-    setOptions({ cpu }) {
-      this.chart.setOption({
+    setOptions({ cpu, mem }) {
+      this.cpuChart.setOption({
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
         },
@@ -68,6 +78,36 @@ export default {
             },
             data: [
               { value: cpu.used, name: 'CPU占用率' }
+            ]
+          }
+        ]
+      }, true)
+      this.menChart.setOption({
+        tooltip: {
+          formatter: '{a} <br/>{b} : {c}%'
+        },
+        series: [
+          {
+            name: '业务指标',
+            type: 'gauge',
+            detail: { formatter: `${mem.usageRate}%` },
+            axisLine: {
+              lineStyle: {
+                width: 10
+              }
+            },
+            splitLine: {
+              length: 15,
+              lineStyle: {
+                color: '#DCDFE6'
+              }
+            },
+            pointer: {
+              length: '75%',
+              width: 5
+            },
+            data: [
+              { value: mem.usageRate, name: '内存占用率' }
             ]
           }
         ]
