@@ -12,13 +12,13 @@
       </div>
       <el-row :gutter="20">
         <el-col :span="8">
-          <div class="chart" id="cpuChart" style="width: 250px;height: 250px" />
+          <div ref="cpuChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
         <el-col :span="8">
-          <div class="chart" id="menChart" style="width: 250px;height: 250px" />
+          <div ref="menChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
         <el-col :span="8">
-          <div class="chart" id="loadavgChart" style="width: 250px;height: 250px" />
+          <div ref="loadavgChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
       </el-row>
     </el-card>
@@ -64,9 +64,9 @@ export default {
   },
   methods: {
     initChart() {
-      this.cpuChart = echarts.init(document.getElementById('cpuChart'))
-      this.menChart = echarts.init(document.getElementById('menChart'))
-      this.loadavgChart = echarts.init(document.getElementById('loadavgChart'))
+      this.cpuChart = echarts.init(this.$refs.cpuChart)
+      this.menChart = echarts.init(this.$refs.menChart)
+      this.loadavgChart = echarts.init(this.$refs.loadavgChart)
     },
     setOptions({ cpu, mem, sys }) {
       this.cpuChart.setOption({
