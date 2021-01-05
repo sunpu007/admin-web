@@ -75,9 +75,12 @@ export default {
         },
         series: [
           {
-            name: '业务指标',
+            name: 'CPU',
             type: 'gauge',
-            detail: { formatter: `${cpu.used}%` },
+            detail: {
+              formatter: `${cpu.used}%`,
+              fontSize: 25
+            },
             axisLine: {
               lineStyle: {
                 width: 10
@@ -105,9 +108,12 @@ export default {
         },
         series: [
           {
-            name: '业务指标',
+            name: '内存占用率',
             type: 'gauge',
-            detail: { formatter: `${mem.usageRate}%` },
+            detail: {
+              formatter: `${mem.usageRate}%`,
+              fontSize: 25
+            },
             axisLine: {
               lineStyle: {
                 width: 10
@@ -135,9 +141,12 @@ export default {
         },
         series: [
           {
-            name: '业务指标',
+            name: '系统负载',
             type: 'gauge',
-            detail: { formatter: `${sys.loadavg5m}%` },
+            detail: {
+              formatter: `${sys.loadavg5m}%`,
+              fontSize: 25
+            },
             axisLine: {
               lineStyle: {
                 width: 10
