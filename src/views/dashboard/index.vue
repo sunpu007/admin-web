@@ -12,13 +12,13 @@
       </div>
       <el-row :gutter="20">
         <el-col :span="8">
-          <div id="cpuChart" style="width: 250px;height: 250px" />
+          <div class="chart" id="cpuChart" style="width: 250px;height: 250px" />
         </el-col>
         <el-col :span="8">
-          <div id="menChart" style="width: 250px;height: 250px" />
+          <div class="chart" id="menChart" style="width: 250px;height: 250px" />
         </el-col>
         <el-col :span="8">
-          <div id="loadavgChart" style="width: 250px;height: 250px" />
+          <div class="chart" id="loadavgChart" style="width: 250px;height: 250px" />
         </el-col>
       </el-row>
     </el-card>
@@ -182,6 +182,9 @@ export default {
     font-size: 10px;
     margin-left: 5px;
     margin-right: 30px;
+  }
+  .chart {
+    margin: 0 auto;
   }
 }
 </style>
