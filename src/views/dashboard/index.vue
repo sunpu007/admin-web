@@ -48,7 +48,7 @@ const common = {
   pointer: {
     length: '75%',
     width: 5
-  },
+  }
 }
 export default {
   name: 'Dashboard',
