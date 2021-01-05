@@ -17,6 +17,9 @@
         <el-col :span="8">
           <div id="menChart" style="width: 250px;height: 250px" />
         </el-col>
+        <el-col :span="8">
+          <div id="loadavgChart" style="width: 250px;height: 250px" />
+        </el-col>
       </el-row>
     </el-card>
   </div>
@@ -32,6 +35,7 @@ export default {
     return {
       cpuChart: null,
       menChart: null,
+      loadavgChart: null,
 
       data: {
         cpu: {},
@@ -62,8 +66,9 @@ export default {
     initChart() {
       this.cpuChart = echarts.init(document.getElementById('cpuChart'))
       this.menChart = echarts.init(document.getElementById('menChart'))
+      this.loadavgChart = echarts.init(document.getElementById('loadavgChart'))
     },
-    setOptions({ cpu, mem }) {
+    setOptions({ cpu, mem, sys }) {
       this.cpuChart.setOption({
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
@@ -120,6 +125,36 @@ export default {
             },
             data: [
               { value: mem.usageRate, name: '内存占用率' }
+            ]
+          }
+        ]
+      }, true)
+      this.loadavgChart.setOption({
+        tooltip: {
+          formatter: '{a} <br/>{b} : {c}%'
+        },
+        series: [
+          {
+            name: '业务指标',
+            type: 'gauge',
+            detail: { formatter: `${sys.loadavg5m}%` },
+            axisLine: {
+              lineStyle: {
+                width: 10
+              }
+            },
+            splitLine: {
+              length: 15,
+              lineStyle: {
+                color: '#DCDFE6'
+              }
+            },
+            pointer: {
+              length: '75%',
+              width: 5
+            },
+            data: [
+              { value: sys.loadavg5m, name: '系统5m负载' }
             ]
           }
         ]
