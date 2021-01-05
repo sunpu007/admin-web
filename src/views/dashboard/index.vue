@@ -84,15 +84,14 @@ export default {
   },
   methods: {
     createWebSocket() {
-      try{
-        if('WebSocket' in window){
-          this.ws = new WebSocket(`ws://${location.host}/ws`);
+      try {
+        if ('WebSocket' in window) {
+          this.ws = new WebSocket(`ws://${location.host}/ws`)
         }
-        this.initEventHandle();
-      }catch(e){
-        this.createWebSocket();
-        console.log(e);
-      } 
+        this.initEventHandle()
+      } catch (e) {
+        this.createWebSocket()
+      }
     },
     initEventHandle() {
       const that = this
