@@ -11,13 +11,16 @@
         <b>状态</b>
       </div>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="6">
           <div ref="cpuChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
           <div ref="menChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
-        <el-col :span="8">
+        <el-col :span="6">
+          <div ref="diskChart" class="chart" style="width: 250px;height: 250px" />
+        </el-col>
+        <el-col :span="6">
           <div ref="loadavgChart" class="chart" style="width: 250px;height: 250px" />
         </el-col>
       </el-row>
@@ -36,11 +39,13 @@ export default {
       cpuChart: null,
       menChart: null,
       loadavgChart: null,
+      diskChart: null,
 
       data: {
         cpu: {},
         mem: {},
-        sys: {}
+        sys: {},
+        disk: {}
       }
     }
   },
@@ -67,8 +72,26 @@ export default {
       this.cpuChart = echarts.init(this.$refs.cpuChart)
       this.menChart = echarts.init(this.$refs.menChart)
       this.loadavgChart = echarts.init(this.$refs.loadavgChart)
+      this.diskChart = echarts.init(this.$refs.diskChart)
     },
-    setOptions({ cpu, mem, sys }) {
+    setOptions({ cpu, mem, sys, disk }) {
+      const common = {
+        axisLine: {
+          lineStyle: {
+            width: 10
+          }
+        },
+        splitLine: {
+          length: 15,
+          lineStyle: {
+            color: '#DCDFE6'
+          }
+        },
+        pointer: {
+          length: '75%',
+          width: 5
+        },
+      }
       this.cpuChart.setOption({
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
@@ -81,21 +104,7 @@ export default {
               formatter: `${cpu.used}%`,
               fontSize: 25
             },
-            axisLine: {
-              lineStyle: {
-                width: 10
-              }
-            },
-            splitLine: {
-              length: 15,
-              lineStyle: {
-                color: '#DCDFE6'
-              }
-            },
-            pointer: {
-              length: '75%',
-              width: 5
-            },
+            ...common,
             data: [
               { value: cpu.used, name: 'CPU占用率' }
             ]
@@ -114,21 +123,7 @@ export default {
               formatter: `${mem.usageRate}%`,
               fontSize: 25
             },
-            axisLine: {
-              lineStyle: {
-                width: 10
-              }
-            },
-            splitLine: {
-              length: 15,
-              lineStyle: {
-                color: '#DCDFE6'
-              }
-            },
-            pointer: {
-              length: '75%',
-              width: 5
-            },
+            ...common,
             data: [
               { value: mem.usageRate, name: '内存占用率' }
             ]
@@ -147,23 +142,28 @@ export default {
               formatter: `${sys.loadavg5m}%`,
               fontSize: 25
             },
-            axisLine: {
-              lineStyle: {
-                width: 10
-              }
-            },
-            splitLine: {
-              length: 15,
-              lineStyle: {
-                color: '#DCDFE6'
-              }
-            },
-            pointer: {
-              length: '75%',
-              width: 5
-            },
+            ...common,
             data: [
               { value: sys.loadavg5m, name: '系统5m负载' }
+            ]
+          }
+        ]
+      }, true)
+      this.diskChart.setOption({
+        tooltip: {
+          formatter: '{a} <br/>{b} : {c}%'
+        },
+        series: [
+          {
+            name: '磁盘使用率',
+            type: 'gauge',
+            detail: {
+              formatter: `${disk.usageRate}%`,
+              fontSize: 25
+            },
+            ...common,
+            data: [
+              { value: disk.usageRate, name: '磁盘使用率' }
             ]
           }
         ]
