@@ -6,22 +6,22 @@
       <!-- <b>系统时间:</b><span class="system-text">{{ data.time }}</span> -->
       <b>系统运行时间:</b><span class="system-text">{{ data.sys.date }}</span>
     </el-card>
-    <el-card class="box-card">
+    <el-card class="box-card chart-container">
       <div slot="header" class="clearfix">
         <b>状态</b>
       </div>
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <div ref="cpuChart" class="chart" style="width: 250px;height: 250px" />
+      <el-row>
+        <el-col :span="6" :xs="24" :sm="12" :md="6">
+          <div ref="cpuChart" class="chart" />
         </el-col>
-        <el-col :span="6">
-          <div ref="menChart" class="chart" style="width: 250px;height: 250px" />
+        <el-col :span="6" :xs="24" :sm="12" :md="6">
+          <div ref="menChart" class="chart" />
         </el-col>
-        <el-col :span="6">
-          <div ref="diskChart" class="chart" style="width: 250px;height: 250px" />
+        <el-col :span="6" :xs="24" :sm="12" :md="6">
+          <div ref="diskChart" class="chart" />
         </el-col>
-        <el-col :span="6">
-          <div ref="loadavgChart" class="chart" style="width: 250px;height: 250px" />
+        <el-col :span="6" :xs="24" :sm="12" :md="6">
+          <div ref="loadavgChart" class="chart" />
         </el-col>
       </el-row>
     </el-card>
@@ -32,6 +32,24 @@
 import { mapGetters } from 'vuex'
 import * as echarts from 'echarts'
 require('echarts/theme/macarons')
+
+const common = {
+  axisLine: {
+    lineStyle: {
+      width: 10
+    }
+  },
+  splitLine: {
+    length: 15,
+    lineStyle: {
+      color: '#DCDFE6'
+    }
+  },
+  pointer: {
+    length: '75%',
+    width: 5
+  },
+}
 export default {
   name: 'Dashboard',
   data() {
@@ -75,23 +93,6 @@ export default {
       this.diskChart = echarts.init(this.$refs.diskChart)
     },
     setOptions({ cpu, mem, sys, disk }) {
-      const common = {
-        axisLine: {
-          lineStyle: {
-            width: 10
-          }
-        },
-        splitLine: {
-          length: 15,
-          lineStyle: {
-            color: '#DCDFE6'
-          }
-        },
-        pointer: {
-          length: '75%',
-          width: 5
-        },
-      }
       this.cpuChart.setOption({
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
@@ -130,25 +131,6 @@ export default {
           }
         ]
       }, true)
-      this.loadavgChart.setOption({
-        tooltip: {
-          formatter: '{a} <br/>{b} : {c}%'
-        },
-        series: [
-          {
-            name: '系统负载',
-            type: 'gauge',
-            detail: {
-              formatter: `${sys.loadavg5m}%`,
-              fontSize: 25
-            },
-            ...common,
-            data: [
-              { value: sys.loadavg5m, name: '系统5m负载' }
-            ]
-          }
-        ]
-      }, true)
       this.diskChart.setOption({
         tooltip: {
           formatter: '{a} <br/>{b} : {c}%'
@@ -164,6 +146,25 @@ export default {
             ...common,
             data: [
               { value: disk.usageRate, name: '磁盘使用率' }
+            ]
+          }
+        ]
+      }, true)
+      this.loadavgChart.setOption({
+        tooltip: {
+          formatter: '{a} <br/>{b} : {c}%'
+        },
+        series: [
+          {
+            name: '系统负载',
+            type: 'gauge',
+            detail: {
+              formatter: `${sys.loadavg5m}%`,
+              fontSize: 25
+            },
+            ...common,
+            data: [
+              { value: sys.loadavg5m, name: '系统5m负载' }
             ]
           }
         ]
@@ -193,7 +194,12 @@ export default {
     margin-right: 30px;
   }
   .chart {
+    width: 250px;
+    height: 250px;
     margin: 0 auto;
   }
+}
+.chart-container ::v-deep .el-card__body {
+  padding: 0;
 }
 </style>
