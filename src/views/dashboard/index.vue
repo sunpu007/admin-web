@@ -54,6 +54,9 @@ export default {
   name: 'Dashboard',
   data() {
     return {
+      ws: null,
+      lockReconnect: false,
+
       cpuChart: null,
       menChart: null,
       loadavgChart: null,
@@ -73,19 +76,50 @@ export default {
     ])
   },
   mounted() {
-    const that = this
-    const ws = new WebSocket(`ws://${location.host}/ws`)
-    ws.addEventListener('message', ({ data }) => {
-      ws.send('hello')
-      that.data = JSON.parse(data)
-      that.setOptions(that.data)
-    })
+    this.createWebSocket()
 
     this.$nextTick(() => {
       this.initChart()
     })
   },
   methods: {
+    createWebSocket() {
+      try{
+        if('WebSocket' in window){
+          this.ws = new WebSocket(`ws://${location.host}/ws`);
+        }
+        this.initEventHandle();
+      }catch(e){
+        this.createWebSocket();
+        console.log(e);
+      } 
+    },
+    initEventHandle() {
+      const that = this
+      this.ws.addEventListener('open', () => {
+        console.log('链接成功...')
+        that.ws.send('message')
+      })
+      this.ws.addEventListener('message', ({ data }) => {
+        that.ws.send('message')
+        that.data = JSON.parse(data)
+        that.setOptions(that.data)
+      })
+      // this.ws.addEventListener('close', async () => {
+      //   if (that.lockReconnect) return
+      //   that.lockReconnect = true;
+      //   console.log('连接被断开，开启重连模式...')
+      //   await that.createWebSocket()
+      //   that.lockReconnect = false;
+      // })
+      // this.ws.addEventListener('error', async () => {
+      //   if (that.lockReconnect) return
+      //   that.lockReconnect = true;
+      //   console.log('连接出现异常，开启重连模式...')
+      //   await that.createWebSocket()
+      //   that.lockReconnect = false;
+      // })
+    },
     initChart() {
       this.cpuChart = echarts.init(this.$refs.cpuChart)
       this.menChart = echarts.init(this.$refs.menChart)
