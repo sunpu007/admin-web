@@ -1,10 +1,11 @@
 <template>
   <div class="dashboard-container">
     <el-card class="box-card">
-      <!-- <b>系统:</b><span class="system-text">GNU/Linux Debian GNU/Linux 8 (jessie) build 4.15.0-48-generic </span> -->
-      <b>系统时间:</b><span class="system-text">{{ data.date }}</span>
-      <b>系统运行时间:</b><span class="system-text">{{ data.time }}</span>
-    </el-card> 
+      <b>系统:</b><span class="system-text">{{ data.sys.sys }}</span>
+      <b>IP:</b><span class="system-text">{{ data.sys.ip }}</span>
+      <!-- <b>系统时间:</b><span class="system-text">{{ data.time }}</span> -->
+      <b>系统运行时间:</b><span class="system-text">{{ data.sys.date }}</span>
+    </el-card>
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <b>状态</b>
@@ -18,7 +19,6 @@
         </el-col>
       </el-row>
     </el-card>
-    
   </div>
 </template>
 
@@ -35,7 +35,8 @@ export default {
 
       data: {
         cpu: {},
-        mem: {}
+        mem: {},
+        sys: {}
       }
     }
   },
@@ -46,7 +47,7 @@ export default {
   },
   mounted() {
     const that = this
-    const ws = new WebSocket('ws://127.0.0.1:7002/ws')
+    const ws = new WebSocket(`ws://${location.host}/ws`)
     ws.addEventListener('message', ({ data }) => {
       ws.send('hello')
       that.data = JSON.parse(data)
@@ -140,10 +141,10 @@ export default {
 }
 
 .box-card {
-  font-size: 14px;
+  font-size: 12px;
   margin-bottom: 20px;
   .system-text {
-    font-size: 12px;
+    font-size: 10px;
     margin-left: 5px;
     margin-right: 30px;
   }
