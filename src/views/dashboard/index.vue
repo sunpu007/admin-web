@@ -3,7 +3,7 @@
     <el-card class="box-card">
       <b>系统:</b><span class="system-text">{{ data.sys.sys }}</span>
       <b>IP:</b><span class="system-text">{{ data.sys.ip }}</span>
-      <!-- <b>系统时间:</b><span class="system-text">{{ data.time }}</span> -->
+      <b>系统时间:</b><span class="system-text">{{ data.time }}</span>
       <b>系统运行时间:</b><span class="system-text">{{ data.sys.date }}</span>
     </el-card>
     <el-card class="box-card chart-container">
@@ -231,8 +231,8 @@ export default {
     margin-right: 30px;
   }
   .chart {
-    width: 250px;
-    height: 250px;
+    width: 300px;
+    height: 300px;
     margin: 0 auto;
   }
 }
