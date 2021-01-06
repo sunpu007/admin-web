@@ -87,6 +87,7 @@ export default {
       try {
         if ('WebSocket' in window) {
           this.ws = new WebSocket(`ws://${location.host}/ws`)
+          this.lockReconnect = false;
         }
         this.initEventHandle()
       } catch (e) {
@@ -95,29 +96,32 @@ export default {
     },
     initEventHandle() {
       const that = this
+      this.ws.removeEventListener('open', () => {})
       this.ws.addEventListener('open', () => {
         console.log('链接成功...')
         that.ws.send('message')
       })
+      this.ws.removeEventListener('message', () => {})
       this.ws.addEventListener('message', ({ data }) => {
         that.ws.send('message')
         that.data = JSON.parse(data)
         that.setOptions(that.data)
       })
-      // this.ws.addEventListener('close', async () => {
-      //   if (that.lockReconnect) return
-      //   that.lockReconnect = true;
-      //   console.log('连接被断开，开启重连模式...')
-      //   await that.createWebSocket()
-      //   that.lockReconnect = false;
-      // })
-      // this.ws.addEventListener('error', async () => {
-      //   if (that.lockReconnect) return
-      //   that.lockReconnect = true;
-      //   console.log('连接出现异常，开启重连模式...')
-      //   await that.createWebSocket()
-      //   that.lockReconnect = false;
-      // })
+      this.ws.removeEventListener('close', () => {})
+      this.ws.addEventListener('close', async () => {
+        console.log('连接被断开，开启重连模式...')
+        await that.reconnection()
+      })
+      this.ws.removeEventListener('error', () => {})
+      this.ws.addEventListener('error', async () => {
+        console.log('连接出现异常，开启重连模式...')
+        await that.reconnection()
+      })
+    },
+    async reconnection() {
+      if (this.lockReconnect) return
+      this.lockReconnect = true;
+      await this.createWebSocket()
     },
     initChart() {
       this.cpuChart = echarts.init(this.$refs.cpuChart)
