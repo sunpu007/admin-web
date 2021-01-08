@@ -207,6 +207,15 @@ export default {
         ]
       }, true)
     }
+  },
+  beforeDestroy() {
+    if (this.ws) {
+      this.ws = null;
+      this.ws.removeEventListener('open', () => {})
+      this.ws.removeEventListener('message', () => {})
+      this.ws.removeEventListener('close', () => {})
+      this.ws.removeEventListener('error', () => {})
+    }
   }
 }
 </script>
