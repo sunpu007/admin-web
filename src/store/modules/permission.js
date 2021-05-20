@@ -1,4 +1,4 @@
-import { constantRoutes } from '@/router'
+import { asyncRoutes, constantRoutes } from '@/router'
 
 import Layout from '@/layout'
 

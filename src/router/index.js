@@ -160,6 +160,27 @@ export const constantRoutes = [
   }
 ]
 
+export const asyncRoutes = [
+  {
+    path: '/task',
+    component: Layout,
+    redirect: '/task/schedule',
+    name: 'Task',
+    meta: {
+      title: '任务管理',
+      icon: 'task'
+    },
+    children: [
+      {
+        path: 'schedule',
+        component: () => import(/* webpackChunkName: "task" */  '@/views/task/schedule'),
+        name: 'TaskSchedule',
+        meta: { title: '定时任务管理', icon: 'schedule' }
+      }
+    ]
+  }
+]
+
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
