@@ -141,6 +141,7 @@ export default {
       this.menuIds = menuIds.filter(id => !this.menuOneIds.includes(id))
     },
     async confirmRoleMenu() {
+      if (this.roleId === 1) return this.$message.warning('超级管理员权限不允许更改')
       const { code } = await editRoleMenu({ role_id: this.roleId, menuIds: this.menuIds })
       if (code === 0) {
         this.$message({
