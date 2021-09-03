@@ -3,13 +3,14 @@
     <div class="filter-container">
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" @click="handleEdit(null)">新增</el-button>
     </div>
+    <i style="color: red;"><b>当前项目中存在两个jobHandler方法，testHandler（定时打印日志）与testCurlHandler（定时调用接口，参数为必填，必须为json字符串格式）</b></i>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" prop="job_id" label="任务ID" />
       <el-table-column align="center" prop="jobName" label="任务名" />
       <el-table-column align="center" prop="cron" label="Cron" />
       <el-table-column align="center" prop="jobHandler" label="jobHandler" />
       <el-table-column align="center" prop="params" label="参数" />
-      <el-table-column align="center" prop="remark" label="任务描述" />
+      <el-table-column align="center" prop="description" label="任务描述" />
       <el-table-column align="center" prop="status" label="状态">
         <template slot-scope="{row}">
           <el-tag v-if="row.status==0" type="success">run</el-tag>
@@ -41,8 +42,8 @@
         <el-form-item label="参数" prop="params">
           <el-input v-model="fromData.params" type="textarea" placeholder="请输入参数" />
         </el-form-item>
-        <el-form-item label="任务描述" prop="remark">
-          <el-input v-model="fromData.remark" type="textarea" placeholder="请输入任务描述" />
+        <el-form-item label="任务描述" prop="description">
+          <el-input v-model="fromData.description" type="textarea" placeholder="请输入任务描述" />
         </el-form-item>
       </el-form>
       <div style="text-align:right;">
@@ -137,7 +138,7 @@ export default {
       const { code } = await updateStatusSchedule({ job_id, status })
       if (code === 0) {
         this.$message({
-          message: '编辑成功',
+          message: status === 0 ? '任务启动成功' : '任务停止成功',
           type: 'success'
         })
         this.getList()
