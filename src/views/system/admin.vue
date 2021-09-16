@@ -132,7 +132,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async() => {
-        const { code } = await delAdmin({ username: row.username })
+        const { code } = await delAdmin({ adminId: row.adminId })
         if (code === 0) {
           this.$message({
             message: '删除成功',
