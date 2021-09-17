@@ -82,6 +82,15 @@ export default {
       this.initChart()
     })
   },
+  beforeDestroy() {
+    if (this.ws) {
+      this.ws.removeEventListener('open', this.onOpen)
+      this.ws.removeEventListener('message', this.onMessage)
+      this.ws.removeEventListener('close', this.onClose)
+      this.ws.removeEventListener('error', this.onError)
+      this.ws.close()
+    }
+  },
   methods: {
     createWebSocket() {
       try {
@@ -95,28 +104,32 @@ export default {
       }
     },
     initEventHandle() {
-      const that = this
-      this.ws.removeEventListener('open', () => {})
-      this.ws.addEventListener('open', () => {
-        console.log('链接成功...')
-        that.ws.send('message')
-      })
-      this.ws.removeEventListener('message', () => {})
-      this.ws.addEventListener('message', ({ data }) => {
-        that.ws.send('message')
-        that.data = JSON.parse(data)
-        that.setOptions(that.data)
-      })
-      this.ws.removeEventListener('close', () => {})
-      this.ws.addEventListener('close', async() => {
-        console.log('连接被断开，开启重连模式...')
-        await that.reconnection()
-      })
-      this.ws.removeEventListener('error', () => {})
-      this.ws.addEventListener('error', async() => {
-        console.log('连接出现异常，开启重连模式...')
-        await that.reconnection()
-      })
+      this.ws.removeEventListener('open', this.onOpen)
+      this.ws.removeEventListener('message', this.onMessage)
+      this.ws.removeEventListener('close', this.onClose)
+      this.ws.removeEventListener('error', this.onError)
+
+      this.ws.addEventListener('open', this.onOpen)
+      this.ws.addEventListener('message', this.onMessage)
+      this.ws.addEventListener('close', this.onClose)
+      this.ws.addEventListener('error', this.onError)
+    },
+    onOpen() {
+      console.log('链接成功...')
+      this.ws.send('message')
+    },
+    onMessage({ data }) {
+      this.ws.send('message')
+      this.data = JSON.parse(data)
+      this.setOptions(this.data)
+    },
+    async onClose() {
+      console.log('连接被断开，开启重连模式...')
+      await this.reconnection()
+    },
+    async onError() {
+      console.log('连接出现异常，开启重连模式...')
+      await this.reconnection()
     },
     async reconnection() {
       if (this.lockReconnect) return
@@ -206,15 +219,6 @@ export default {
           }
         ]
       }, true)
-    }
-  },
-  beforeDestroy() {
-    if (this.ws) {
-      this.ws = null;
-      this.ws.removeEventListener('open', () => {})
-      this.ws.removeEventListener('message', () => {})
-      this.ws.removeEventListener('close', () => {})
-      this.ws.removeEventListener('error', () => {})
     }
   }
 }
