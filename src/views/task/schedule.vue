@@ -22,6 +22,7 @@
           <el-button v-if="row.status==-1" type="text" @click="updateStatus(row.job_id, 0)">启动</el-button>
           <el-button v-else type="text" @click="updateStatus(row.job_id, -1)">停止</el-button>
           <el-button type="text" @click="run(row.job_id)">执行</el-button>
+          <el-button type="text" @click="showLog(row.job_id)">日志</el-button>
           <el-button type="text" @click="handleEdit(row)">编辑</el-button>
           <el-button type="text" @click="del(row)">删除</el-button>
         </template>
@@ -51,13 +52,26 @@
         <el-button type="primary" @click="confirm">提交</el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="logDialogVisible" title="任务执行日志">
+      <el-table :data="logList" border fit highlight-current-row style="width: 100%">
+        <el-table-column align="center" prop="id" label="ID" />
+        <el-table-column align="center" prop="jobName" label="任务名" />
+        <el-table-column align="center" prop="jobHandler" label="处理方法" />
+        <el-table-column align="center" prop="jobParam" label="参数" />
+        <el-table-column align="center" prop="handleTime" label="执行时间" />
+        <el-table-column align="center" prop="jobStatus" label="执行状态" />
+        <el-table-column align="center" prop="triggerType" label="触发类型" />
+        <el-table-column align="center" prop="executionStatus" label="任务状态" />
+      </el-table>
+      <pagination v-show="logTotal>0" :total="logTotal" :page.sync="logListQuery.page" :limit.sync="logListQuery.size" @pagination="getLogList" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
-import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule } from '@/api/task'
+import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList } from '@/api/task'
 export default {
   components: { Pagination },
   directives: { waves },
@@ -78,7 +92,17 @@ export default {
         cron: { required: true, message: '请输入Cron', trigger: 'blur' },
         jobName: { required: true, message: '请输入任务名', trigger: 'blur' },
         jobHandler: { required: true, message: '请输入jobHandler', trigger: 'blur' }
-      }
+      },
+
+      // 日志浮窗
+      logDialogVisible: false,
+      logListQuery: {
+        page: 1,
+        size: 20,
+        job_id: ''
+      },
+      logList: [],
+      logTotal: 0
     }
   },
   mounted() {
@@ -151,6 +175,18 @@ export default {
           message: '执行成功',
           type: 'success'
         })
+      }
+    },
+    showLog(job_id) {
+      this.logListQuery.job_id = job_id
+      this.getLogList()
+    },
+    async getLogList() {
+      const { code, data } = await scheduleLogList(this.logListQuery)
+      if (code === 0) {
+        this.logList = data.list
+        this.logTotal = data.total
+        this.logDialogVisible = true
       }
     }
   }

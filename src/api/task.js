@@ -59,3 +59,27 @@ export function runSchedule(data) {
     data
   })
 }
+
+/**
+ * 定时任务日志列表
+ * @param {*} params
+ */
+export function scheduleLogList(params) {
+  return request({
+    url: '/task/schedule/log/list',
+    method: 'GET',
+    params
+  })
+}
+
+/**
+ * 获取任务执行日志详细信息
+ * @param {*} params
+ */
+export function scheduleLogDetail(params) {
+  return request({
+    url: '/task/schedule/log/detail',
+    method: 'GET',
+    params
+  })
+}
