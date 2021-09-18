@@ -52,18 +52,40 @@
         <el-button type="primary" @click="confirm">提交</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="logDialogVisible" title="任务执行日志">
+    <el-dialog :visible.sync="logDialogVisible" title="执行记录">
       <el-table :data="logList" border fit highlight-current-row style="width: 100%">
         <el-table-column align="center" prop="id" label="ID" />
         <el-table-column align="center" prop="jobName" label="任务名" />
         <el-table-column align="center" prop="jobHandler" label="处理方法" />
         <el-table-column align="center" prop="jobParam" label="参数" />
         <el-table-column align="center" prop="handleTime" label="执行时间" />
-        <el-table-column align="center" prop="jobStatus" label="执行状态" />
-        <el-table-column align="center" prop="triggerType" label="触发类型" />
-        <el-table-column align="center" prop="executionStatus" label="任务状态" />
+        <el-table-column align="center" prop="jobStatus" label="执行状态">
+          <template slot-scope="{row}">
+            <el-tag v-if="row.jobStatus==0" type="success">成功</el-tag>
+            <el-tag v-else type="info">失败</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="triggerType" label="触发类型">
+          <template slot-scope="{row}">
+            {{ row.triggerType | triggerTypeFilter }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="executionStatus" label="任务状态">
+          <template slot-scope="{row}">
+            {{ row.executionStatus | executionStatusFilter }}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="操作">
+          <template slot-scope="{row}">
+            <el-button type="text" @click="showDetail(row.id)">详情日志</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <pagination v-show="logTotal>0" :total="logTotal" :page.sync="logListQuery.page" :limit.sync="logListQuery.size" @pagination="getLogList" />
+    </el-dialog>
+
+    <el-dialog :visible.sync="logDetailDialogVisible" title="执行日志">
+      <div v-html="logDetail" />
     </el-dialog>
   </div>
 </template>
@@ -71,10 +93,18 @@
 <script>
 import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
-import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList } from '@/api/task'
+import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList, scheduleLogDetail } from '@/api/task'
 export default {
   components: { Pagination },
   directives: { waves },
+  filters: {
+    triggerTypeFilter(val) {
+      return val === 0 ? '任务触发' : '手动触发'
+    },
+    executionStatusFilter(val) {
+      return val === 0 ? '执行中' : '执行完成'
+    }
+  },
   data() {
     return {
       listLoading: false,
@@ -102,11 +132,18 @@ export default {
         job_id: ''
       },
       logList: [],
-      logTotal: 0
+      logTotal: 0,
+
+      logDetailDialogVisible: false,
+      logDetail: '',
+      timer: null
     }
   },
   mounted() {
     this.getList()
+  },
+  beforeDestroy() {
+    this.timer && clearInterval(this.timer)
   },
   methods: {
     async getList() {
@@ -180,13 +217,28 @@ export default {
     showLog(job_id) {
       this.logListQuery.job_id = job_id
       this.getLogList()
+      this.logDialogVisible = true
     },
     async getLogList() {
       const { code, data } = await scheduleLogList(this.logListQuery)
       if (code === 0) {
         this.logList = data.list
         this.logTotal = data.total
-        this.logDialogVisible = true
+      }
+    },
+    showDetail(id) {
+      this.logDetail = ''
+      this.getLogDetail(id)
+      this.timer = setInterval(() => {
+        this.getLogDetail(id)
+      }, 1000)
+      this.logDetailDialogVisible = true
+    },
+    async getLogDetail(id) {
+      const { code, data } = await scheduleLogDetail({ id })
+      if (code === 0) {
+        this.logDetail = data.detail
+        if (data.executionStatus === 1) clearInterval(this.timer)
       }
     }
   }
