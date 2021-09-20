@@ -52,7 +52,7 @@
         <el-button type="primary" @click="confirm">提交</el-button>
       </div>
     </el-dialog>
-    <el-dialog :visible.sync="logDialogVisible" title="执行记录">
+    <el-dialog :visible.sync="logDialogVisible" fullscreen title="执行记录">
       <el-table :data="logList" border fit highlight-current-row style="width: 100%">
         <el-table-column align="center" prop="id" label="ID" />
         <el-table-column align="center" prop="jobName" label="任务名" />
