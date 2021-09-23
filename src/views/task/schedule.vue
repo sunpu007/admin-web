@@ -86,6 +86,7 @@
 
     <el-dialog :visible.sync="logDetailDialogVisible" title="执行日志">
       <div v-html="logDetail" />
+      <!-- isShowExecutionAnimation -->
     </el-dialog>
   </div>
 </template>
@@ -134,9 +135,12 @@ export default {
       logList: [],
       logTotal: 0,
 
+      // 日志详情
       logDetailDialogVisible: false,
       logDetail: '',
-      timer: null
+      timer: null,
+      // 是否展示执行中动画
+      isShowExecutionAnimation: false
     }
   },
   mounted() {
@@ -227,6 +231,7 @@ export default {
       }
     },
     showDetail(id) {
+      this.isShowExecutionAnimation = true
       this.logDetail = ''
       this.getLogDetail(id)
       this.timer = setInterval(() => {
@@ -238,7 +243,10 @@ export default {
       const { code, data } = await scheduleLogDetail({ id })
       if (code === 0) {
         this.logDetail = data.detail
-        if (data.executionStatus === 1) clearInterval(this.timer)
+        if (data.executionStatus === 1) {
+          this.isShowExecutionAnimation = false
+          clearInterval(this.timer)
+        }
       }
     }
   }
