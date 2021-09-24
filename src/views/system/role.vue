@@ -4,7 +4,11 @@
       <el-col :span="17">
         <el-card class="box-card">
           <div slot="header">
-            <span>角色列表</span>
+            <span>角色列表
+              <el-tooltip class="item" effect="dark" content="修改后需重新登录才能生效" placement="right">
+                <i class="el-icon-question" />
+              </el-tooltip>
+            </span>
             <el-button v-waves class="filter-item" style="float: right;" type="primary" icon="el-icon-plus" @click="handleEdit(null)">添加</el-button>
           </div>
           <el-table v-loading="listLoading" :data="list" fit highlight-current-row style="width: 100%" @row-click="clickRow">
