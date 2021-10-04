@@ -9,7 +9,7 @@
       <el-table-column align="center" prop="jobName" label="任务名" />
       <el-table-column align="center" prop="cron" label="Cron" />
       <el-table-column align="center" prop="jobHandler" label="jobHandler" />
-      <el-table-column align="center" prop="params" label="参数" />
+      <el-table-column align="center" prop="params" label="参数" show-overflow-tooltip />
       <el-table-column align="center" prop="description" label="任务描述" />
       <el-table-column align="center" prop="status" label="状态">
         <template slot-scope="{row}">
@@ -57,7 +57,7 @@
         <el-table-column align="center" prop="id" label="ID" />
         <el-table-column align="center" prop="jobName" label="任务名" />
         <el-table-column align="center" prop="jobHandler" label="处理方法" />
-        <el-table-column align="center" prop="jobParam" label="参数" />
+        <el-table-column align="center" prop="jobParam" label="参数" show-overflow-tooltip />
         <el-table-column align="center" prop="handleTime" label="执行时间">
           <template slot-scope="{row}">
             {{ row.handleTime | dateTimeFilter('yyyy-MM-dd hh:mm:ss') }}
