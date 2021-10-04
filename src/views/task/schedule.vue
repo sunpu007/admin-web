@@ -58,7 +58,11 @@
         <el-table-column align="center" prop="jobName" label="任务名" />
         <el-table-column align="center" prop="jobHandler" label="处理方法" />
         <el-table-column align="center" prop="jobParam" label="参数" />
-        <el-table-column align="center" prop="handleTime" label="执行时间" />
+        <el-table-column align="center" prop="handleTime" label="执行时间">
+          <template slot-scope="{row}">
+            {{ row.handleTime | dateTimeFilter('yyyy-MM-dd hh:mm:ss') }}
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="jobStatus" label="执行状态">
           <template slot-scope="{row}">
             <el-tag v-if="row.jobStatus==0" type="success">成功</el-tag>
