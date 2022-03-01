@@ -24,6 +24,7 @@
           <el-button type="text" @click="run(row.job_id)">执行</el-button>
           <el-button type="text" @click="showLog(row.job_id)">日志</el-button>
           <el-button type="text" @click="handleEdit(row)">编辑</el-button>
+          <el-button v-if="row.runMode==1" type="text" @click="handleEditShell(row)">编辑Shell</el-button>
           <el-button type="text" @click="del(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -37,7 +38,13 @@
         <el-form-item label="任务名" prop="jobName">
           <el-input v-model="fromData.jobName" placeholder="请输入任务名" />
         </el-form-item>
-        <el-form-item label="jobHandler" prop="jobHandler">
+        <el-form-item label="运行模式" prop="runMode">
+          <el-select v-model="fromData.runMode" placeholder="请选择">
+            <el-option label="BEAN模式" :value="0" />
+            <el-option label="SHELL模式" :value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="fromData.runMode==0" label="jobHandler" prop="jobHandler">
           <el-input v-model="fromData.jobHandler" placeholder="请输入jobHandler" />
         </el-form-item>
         <el-form-item label="参数" prop="params">
@@ -111,6 +118,9 @@ export default {
     }
   },
   data() {
+    const validateJobHandler = (rule, value, callback) => {
+      console.log(rule, value, callback);
+    }
     return {
       listLoading: false,
       list: [],
@@ -122,11 +132,17 @@ export default {
 
       dialogVisible: false,
       dialogType: 'new',
-      fromData: {},
+      fromData: {
+        runMode: 0
+      },
       rules: {
         cron: { required: true, message: '请输入Cron', trigger: 'blur' },
         jobName: { required: true, message: '请输入任务名', trigger: 'blur' },
         jobHandler: { required: true, message: '请输入jobHandler', trigger: 'blur' }
+      },
+
+      sourceFromData: {
+        runSource: '#!/bin/bash\necho "hello shell"\nexit 0'
       },
 
       // 日志浮窗
@@ -164,7 +180,7 @@ export default {
       }
     },
     handleEdit(row) {
-      this.fromData = {}
+      this.fromData = { runMode: 0 }
       if (row) {
         this.fromData = JSON.parse(JSON.stringify(row))
         this.dialogType = 'edit'
@@ -186,6 +202,14 @@ export default {
           this.getList()
         }
       })
+    },
+    handleEditShell(row) {
+      this.sourceFromData = {
+        runSource: '#!/bin/bash\necho "hello shell"\nexit 0'
+      }
+      if (row) {
+        this.fromData = JSON.parse(JSON.stringify(row))
+      }
     },
     del(row) {
       this.$confirm('确定要删除该任务吗？', '提示', {
