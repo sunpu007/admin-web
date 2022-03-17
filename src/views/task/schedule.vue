@@ -104,7 +104,7 @@
     <el-dialog :visible.sync="shellDialogVisible" title="编辑shell">
       <codemirror v-model="sourceFromData.runSource" :options="cmOptions" />
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="confirmShell">保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -118,10 +118,7 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/liquibyte.css'
 import 'codemirror/addon/hint/show-hint.css'
 
-import 'codemirror/mode/shell/shell.js'
-import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/hint/show-hint.js'
-import 'codemirror/addon/hint/anyword-hint.js'
 import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList, scheduleLogDetail } from '@/api/task'
 export default {
   components: { Pagination, codemirror },
@@ -180,7 +177,7 @@ export default {
 
       cmOptions: {
         value: '',
-        mode: 'text/shell',
+        mode: 'text/x-sh',
         theme: 'liquibyte',
         indentWithTabs: true,
         smartIndent: true,
@@ -243,7 +240,18 @@ export default {
       if (row) {
         this.fromData = JSON.parse(JSON.stringify(row))
       }
-      this.shellDialogVisible = true;
+      this.shellDialogVisible = true
+    },
+    async confirmShell() {
+      const { code } = await editSchedule(this.sourceFromData)
+      if (code === 0) {
+        this.$message({
+          message: '编辑成功',
+          type: 'success'
+        })
+        this.shellDialogVisible = false
+        this.getList()
+      }
     },
     del(row) {
       this.$confirm('确定要删除该任务吗？', '提示', {
