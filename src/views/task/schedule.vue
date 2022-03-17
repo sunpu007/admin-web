@@ -99,15 +99,32 @@
       <div v-html="logDetail" />
       <!-- isShowExecutionAnimation -->
     </el-dialog>
+
+    <!-- 配置脚本 -->
+    <el-dialog :visible.sync="shellDialogVisible" title="编辑shell">
+      <codemirror v-model="sourceFromData.runSource" :options="cmOptions" />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
+import { codemirror } from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/liquibyte.css'
+import 'codemirror/addon/hint/show-hint.css'
+
+import 'codemirror/mode/shell/shell.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/hint/show-hint.js'
+import 'codemirror/addon/hint/anyword-hint.js'
 import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList, scheduleLogDetail } from '@/api/task'
 export default {
-  components: { Pagination },
+  components: { Pagination, codemirror },
   directives: { waves },
   filters: {
     triggerTypeFilter(val) {
@@ -118,9 +135,6 @@ export default {
     }
   },
   data() {
-    const validateJobHandler = (rule, value, callback) => {
-      console.log(rule, value, callback);
-    }
     return {
       listLoading: false,
       list: [],
@@ -160,7 +174,25 @@ export default {
       logDetail: '',
       timer: null,
       // 是否展示执行中动画
-      isShowExecutionAnimation: false
+      isShowExecutionAnimation: false,
+
+      shellDialogVisible: false,
+
+      cmOptions: {
+        value: '',
+        mode: 'text/shell',
+        theme: 'liquibyte',
+        indentWithTabs: true,
+        smartIndent: true,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        hintOptions: { tables: {
+          users: ['name', 'score', 'birthDate'],
+          countries: ['name', 'population', 'size']
+        }}
+      }
     }
   },
   mounted() {
@@ -205,11 +237,13 @@ export default {
     },
     handleEditShell(row) {
       this.sourceFromData = {
+        ...row,
         runSource: '#!/bin/bash\necho "hello shell"\nexit 0'
       }
       if (row) {
         this.fromData = JSON.parse(JSON.stringify(row))
       }
+      this.shellDialogVisible = true;
     },
     del(row) {
       this.$confirm('确定要删除该任务吗？', '提示', {
