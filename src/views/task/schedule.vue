@@ -48,6 +48,12 @@
           <el-input v-model="fromData.jobHandler" placeholder="请输入jobHandler" />
         </el-form-item>
         <el-form-item label="参数" prop="params">
+          <template v-if="fromData.runMode==1" slot="label">
+            参数
+            <el-tooltip class="item" effect="dark" content="多个参数请用英文逗号隔开" placement="bottom">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </template>
           <el-input v-model="fromData.params" type="textarea" placeholder="请输入参数" />
         </el-form-item>
         <el-form-item label="任务描述" prop="description">
@@ -102,6 +108,7 @@
 
     <!-- 配置脚本 -->
     <el-dialog :visible.sync="shellDialogVisible" title="编辑shell">
+      <i>*由于当前实现原因，接受参数应从第二位开始*</i>
       <codemirror v-model="sourceFromData.runSource" :options="cmOptions" />
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="confirmShell">保存</el-button>
@@ -235,10 +242,10 @@ export default {
     handleEditShell(row) {
       this.sourceFromData = {
         ...row,
-        runSource: '#!/bin/bash\necho "hello shell"\nexit 0'
+        runSource: '#!/bin/bash\n\n# 由于当前实现原因，接受参数应从第二位开始\n\necho "hello shell"\n\nexit 0'
       }
       if (row) {
-        this.fromData = JSON.parse(JSON.stringify(row))
+        this.sourceFromData = JSON.parse(JSON.stringify(row))
       }
       this.shellDialogVisible = true
     },
