@@ -24,6 +24,7 @@
           <el-button type="text" @click="run(row.job_id)">执行</el-button>
           <el-button type="text" @click="showLog(row.job_id)">日志</el-button>
           <el-button type="text" @click="handleEdit(row)">编辑</el-button>
+          <el-button v-if="row.runMode==1" type="text" @click="handleEditShell(row)">编辑Shell</el-button>
           <el-button type="text" @click="del(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -37,10 +38,22 @@
         <el-form-item label="任务名" prop="jobName">
           <el-input v-model="fromData.jobName" placeholder="请输入任务名" />
         </el-form-item>
-        <el-form-item label="jobHandler" prop="jobHandler">
+        <el-form-item label="运行模式" prop="runMode">
+          <el-select v-model="fromData.runMode" placeholder="请选择">
+            <el-option label="BEAN模式" :value="0" />
+            <el-option label="SHELL模式" :value="1" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="fromData.runMode==0" label="jobHandler" prop="jobHandler">
           <el-input v-model="fromData.jobHandler" placeholder="请输入jobHandler" />
         </el-form-item>
         <el-form-item label="参数" prop="params">
+          <template v-if="fromData.runMode==1" slot="label">
+            参数
+            <el-tooltip class="item" effect="dark" content="多个参数请用英文逗号隔开" placement="bottom">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </template>
           <el-input v-model="fromData.params" type="textarea" placeholder="请输入参数" />
         </el-form-item>
         <el-form-item label="任务描述" prop="description">
@@ -92,15 +105,30 @@
       <div v-html="logDetail" />
       <!-- isShowExecutionAnimation -->
     </el-dialog>
+
+    <!-- 配置脚本 -->
+    <el-dialog :visible.sync="shellDialogVisible" title="编辑shell">
+      <i>*由于当前实现原因，接受参数应从第二位开始*</i>
+      <codemirror v-model="sourceFromData.runSource" :options="cmOptions" />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="confirmShell">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
+import { codemirror } from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/liquibyte.css'
+import 'codemirror/addon/hint/show-hint.css'
+
+import 'codemirror/addon/hint/show-hint.js'
 import { scheduleList, editSchedule, deleteSchedule, updateStatusSchedule, runSchedule, scheduleLogList, scheduleLogDetail } from '@/api/task'
 export default {
-  components: { Pagination },
+  components: { Pagination, codemirror },
   directives: { waves },
   filters: {
     triggerTypeFilter(val) {
@@ -122,11 +150,17 @@ export default {
 
       dialogVisible: false,
       dialogType: 'new',
-      fromData: {},
+      fromData: {
+        runMode: 0
+      },
       rules: {
         cron: { required: true, message: '请输入Cron', trigger: 'blur' },
         jobName: { required: true, message: '请输入任务名', trigger: 'blur' },
         jobHandler: { required: true, message: '请输入jobHandler', trigger: 'blur' }
+      },
+
+      sourceFromData: {
+        runSource: '#!/bin/bash\necho "hello shell"\nexit 0'
       },
 
       // 日志浮窗
@@ -144,7 +178,25 @@ export default {
       logDetail: '',
       timer: null,
       // 是否展示执行中动画
-      isShowExecutionAnimation: false
+      isShowExecutionAnimation: false,
+
+      shellDialogVisible: false,
+
+      cmOptions: {
+        value: '',
+        mode: 'text/x-sh',
+        theme: 'liquibyte',
+        indentWithTabs: true,
+        smartIndent: true,
+        lineNumbers: true,
+        matchBrackets: true,
+        autofocus: true,
+        extraKeys: { 'Ctrl-Space': 'autocomplete' },
+        hintOptions: { tables: {
+          users: ['name', 'score', 'birthDate'],
+          countries: ['name', 'population', 'size']
+        }}
+      }
     }
   },
   mounted() {
@@ -164,7 +216,7 @@ export default {
       }
     },
     handleEdit(row) {
-      this.fromData = {}
+      this.fromData = { runMode: 0 }
       if (row) {
         this.fromData = JSON.parse(JSON.stringify(row))
         this.dialogType = 'edit'
@@ -186,6 +238,26 @@ export default {
           this.getList()
         }
       })
+    },
+    handleEditShell(row) {
+      this.sourceFromData = {
+        ...row
+      }
+      if (!row.runSource) {
+        this.sourceFromData.runSource = '#!/bin/bash\n\n# 由于当前实现原因，接受参数应从第二位开始\n\necho "hello shell"\n\nexit 0'
+      }
+      this.shellDialogVisible = true
+    },
+    async confirmShell() {
+      const { code } = await editSchedule(this.sourceFromData)
+      if (code === 0) {
+        this.$message({
+          message: '编辑成功',
+          type: 'success'
+        })
+        this.shellDialogVisible = false
+        this.getList()
+      }
     },
     del(row) {
       this.$confirm('确定要删除该任务吗？', '提示', {
