@@ -241,11 +241,10 @@ export default {
     },
     handleEditShell(row) {
       this.sourceFromData = {
-        ...row,
-        runSource: '#!/bin/bash\n\n# 由于当前实现原因，接受参数应从第二位开始\n\necho "hello shell"\n\nexit 0'
+        ...row
       }
-      if (row) {
-        this.sourceFromData = JSON.parse(JSON.stringify(row))
+      if (!row.runSource) {
+        this.sourceFromData.runSource = '#!/bin/bash\n\n# 由于当前实现原因，接受参数应从第二位开始\n\necho "hello shell"\n\nexit 0'
       }
       this.shellDialogVisible = true
     },
