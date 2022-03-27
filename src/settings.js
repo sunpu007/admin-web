@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '任务调度与动态权限',
 
   /**
    * @type {boolean} true | false

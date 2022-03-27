@@ -5,12 +5,15 @@
     </div>
     <i style="color: red;"><b>当前项目中存在两个jobHandler方法，testHandler（定时打印日志）与testCurlHandler（定时调用接口，参数为必填，必须为json字符串格式）</b></i>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" prop="job_id" label="任务ID" />
-      <el-table-column align="center" prop="jobName" label="任务名" />
-      <el-table-column align="center" prop="cron" label="Cron" />
-      <el-table-column align="center" prop="jobHandler" label="jobHandler" />
-      <el-table-column align="center" prop="params" label="参数" show-overflow-tooltip />
-      <el-table-column align="center" prop="description" label="任务描述" />
+      <el-table-column prop="job_id" label="任务ID" />
+      <el-table-column prop="jobName" label="任务名" />
+      <el-table-column prop="cron" label="Cron" />
+      <el-table-column prop="runMode" label="运行模式">
+        <template slot-scope="{row}">
+          {{ row.runMode | runModeFilter }}<template v-if="row.runMode==0">:{{ row.jobHandler }}</template>
+        </template>
+      </el-table-column>
+      <el-table-column prop="description" label="任务描述" />
       <el-table-column align="center" prop="status" label="状态">
         <template slot-scope="{row}">
           <el-tag v-if="row.status==0" type="success">run</el-tag>
@@ -19,13 +22,20 @@
       </el-table-column>
       <el-table-column align="center" label="操作">
         <template slot-scope="{row}">
-          <el-button v-if="row.status==-1" type="text" @click="updateStatus(row.job_id, 0)">启动</el-button>
-          <el-button v-else type="text" @click="updateStatus(row.job_id, -1)">停止</el-button>
-          <el-button type="text" @click="run(row.job_id)">执行</el-button>
-          <el-button type="text" @click="showLog(row.job_id)">日志</el-button>
-          <el-button type="text" @click="handleEdit(row)">编辑</el-button>
-          <el-button v-if="row.runMode==1" type="text" @click="handleEditShell(row)">编辑Shell</el-button>
-          <el-button type="text" @click="del(row)">删除</el-button>
+          <el-dropdown @command="handleCommand">
+            <el-button type="primary">
+              操作<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="beforeHandleCommand('run', row.job_id)">执行一次</el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommand('showLog', row.job_id, row.runMode)">查询日志</el-dropdown-item>
+              <el-dropdown-item v-if="row.runMode==1" divided :command="beforeHandleCommand('handleEditShell', row)">编辑Shell</el-dropdown-item>
+              <el-dropdown-item v-if="row.status==-1" divided :command="beforeHandleCommand('updateStatus', row.job_id, 0)">启动</el-dropdown-item>
+              <el-dropdown-item v-else :command="beforeHandleCommand('updateStatus', row.job_id, -1)">停止</el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommand('handleEdit', row)">编辑</el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommand('del', row)">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -69,7 +79,7 @@
       <el-table :data="logList" border fit highlight-current-row style="width: 100%">
         <el-table-column align="center" prop="id" label="ID" />
         <el-table-column align="center" prop="jobName" label="任务名" />
-        <el-table-column align="center" prop="jobHandler" label="处理方法" />
+        <el-table-column v-if="logListQuery.runMode==0" align="center" prop="jobHandler" label="处理方法" />
         <el-table-column align="center" prop="jobParam" label="参数" show-overflow-tooltip />
         <el-table-column align="center" prop="handleTime" label="执行时间">
           <template slot-scope="{row}">
@@ -94,7 +104,8 @@
         </el-table-column>
         <el-table-column align="center" label="操作">
           <template slot-scope="{row}">
-            <el-button type="text" @click="showDetail(row.id)">详情日志</el-button>
+            <el-button v-if="row.jobStatus==0" type="text" @click="showDetail(row.id)">执行日志</el-button>
+            <el-button v-else type="text" @click="showDetail(row.id, true)">异常日志</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -136,6 +147,9 @@ export default {
     },
     executionStatusFilter(val) {
       return val === 0 ? '执行中' : '执行完成'
+    },
+    runModeFilter(val) {
+      return val === 0 ? 'BEAN' : 'SHELL'
     }
   },
   data() {
@@ -168,7 +182,8 @@ export default {
       logListQuery: {
         page: 1,
         size: 20,
-        job_id: ''
+        job_id: '',
+        runMode: 0
       },
       logList: [],
       logTotal: 0,
@@ -214,6 +229,12 @@ export default {
         this.list = data.list
         this.total = data.total
       }
+    },
+    beforeHandleCommand(method, ...params) {
+      return { params, method }
+    },
+    handleCommand(command) {
+      this[command.method](...command.params);
     },
     handleEdit(row) {
       this.fromData = { runMode: 0 }
@@ -294,8 +315,13 @@ export default {
         })
       }
     },
-    showLog(job_id) {
-      this.logListQuery.job_id = job_id
+    showLog(job_id, runMode) {
+      this.logListQuery = {
+        page: 1,
+        size: 20,
+        job_id,
+        runMode
+      }
       this.getLogList()
       this.logDialogVisible = true
     },
@@ -306,19 +332,20 @@ export default {
         this.logTotal = data.total
       }
     },
-    showDetail(id) {
+    showDetail(id, error) {
       this.isShowExecutionAnimation = true
       this.logDetail = ''
-      this.getLogDetail(id)
+      this.getLogDetail(id, error)
       this.timer = setInterval(() => {
-        this.getLogDetail(id)
+        this.getLogDetail(id, error)
       }, 1000)
       this.logDetailDialogVisible = true
     },
-    async getLogDetail(id) {
-      const { code, data } = await scheduleLogDetail({ id })
+    async getLogDetail(id, error) {
+      this.logDetail = '';
+      const { code, data } = await scheduleLogDetail({ id, error })
       if (code === 0) {
-        this.logDetail = data.detail
+        this.logDetail = data.detail;
         if (data.executionStatus === 1) {
           this.isShowExecutionAnimation = false
           clearInterval(this.timer)
