@@ -24,7 +24,7 @@
         <template slot-scope="{row}">
           <el-dropdown @command="handleCommand">
             <el-button type="primary">
-              操作<i class="el-icon-arrow-down el-icon--right"></i>
+              操作<i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item :command="beforeHandleCommand('run', row.job_id)">执行一次</el-dropdown-item>
@@ -234,7 +234,7 @@ export default {
       return { params, method }
     },
     handleCommand(command) {
-      this[command.method](...command.params);
+      this[command.method](...command.params)
     },
     handleEdit(row) {
       this.fromData = { runMode: 0 }
@@ -342,10 +342,10 @@ export default {
       this.logDetailDialogVisible = true
     },
     async getLogDetail(id, error) {
-      this.logDetail = '';
+      this.logDetail = ''
       const { code, data } = await scheduleLogDetail({ id, error })
       if (code === 0) {
-        this.logDetail = data.detail;
+        this.logDetail = data.detail
         if (data.executionStatus === 1) {
           this.isShowExecutionAnimation = false
           clearInterval(this.timer)
