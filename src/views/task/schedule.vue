@@ -32,8 +32,8 @@
               <el-dropdown-item v-if="row.runMode==1" divided :command="beforeHandleCommand('handleEditShell', row)">编辑Shell</el-dropdown-item>
               <el-dropdown-item v-if="row.status==-1" divided :command="beforeHandleCommand('updateStatus', row.job_id, 0)">启动</el-dropdown-item>
               <el-dropdown-item v-else :command="beforeHandleCommand('updateStatus', row.job_id, -1)">停止</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand('handleEdit', row)">编辑</el-dropdown-item>
-              <el-dropdown-item :command="beforeHandleCommand('del', row)">删除</el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommand('handleEdit', row)" :disabled="row.status==0">编辑</el-dropdown-item>
+              <el-dropdown-item :command="beforeHandleCommand('del', row)" :disabled="row.status==0">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
