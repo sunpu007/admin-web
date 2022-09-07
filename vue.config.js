@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+const UploadSourceMapWebpackPlugin = require('./build/UploadSourceMapWebpackPlugin');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -28,7 +29,7 @@ module.exports = {
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
-  productionSourceMap: false,
+  productionSourceMap: true,
   devServer: {
     port: port,
     open: false,
@@ -55,7 +56,14 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      new UploadSourceMapWebpackPlugin({
+        uploadUrl: '',
+        apiKey: '',
+        buildVersion: ''
+      })
+    ]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
