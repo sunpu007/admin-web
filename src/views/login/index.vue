@@ -42,7 +42,6 @@
       </el-form-item>
 
       <el-button :loading="loading" type="primary" size="medium" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-      <button @click="errorFn1">test</button>
     </el-form>
   </div>
 </template>
@@ -116,9 +115,6 @@ export default {
           return false
         }
       })
-    },
-    errorFn1() {
-      throw new Error('我是错误数据')
     }
   }
 }
