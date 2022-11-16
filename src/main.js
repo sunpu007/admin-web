@@ -18,6 +18,9 @@ import '@/permission' // permission control
 
 import * as filters from './filters' // global filters
 
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
+
 // set ElementUI lang to EN
 Vue.use(ElementUI, { size: Cookies.get('size') || 'mini' })
 // 如果想要中文版 element-ui，按如下方式声明
@@ -29,6 +32,21 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+
+Sentry.init({
+  Vue,
+  dsn: "http://d03fccd60d7a422dbcc70c14c9e1af01@39.98.93.122:9000/3",
+  integrations: [
+    new Integrations.BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+      tracingOrigins: ["localhost", "my-site-url.com", /^\//],
+    }),
+  ],
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 new Vue({
   el: '#app',
