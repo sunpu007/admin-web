@@ -1,0 +1,7 @@
+[defaults]
+url=http://sentry.myjerry.cn
+org=sentry
+project=admin-web
+
+[auth]
+token=5b8ba064b47045b4989a94a1ddeb4771f657229745d14dbcb62ac365587a5acb
