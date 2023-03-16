@@ -138,7 +138,6 @@ module.exports = {
         include: './dist',
         // 指定sentry上传配置
         configFile: './.sentryclirc',
-        release: '1.0.0',
         // 保持与publicPath相符
         urlPrefix: '/'
       }])

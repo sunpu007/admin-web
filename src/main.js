@@ -35,19 +35,19 @@ Vue.config.productionTip = false
 
 Sentry.init({
   Vue,
-  dsn: "http://0a7730e9082b43a189717472ea14d0e5@sentry.myjerry.cn/2",
+  dsn: 'http://0a7730e9082b43a189717472ea14d0e5@sentry.myjerry.cn/2',
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-      tracingOrigins: ["localhost", "my-site-url.com", /^\//],
-    }),
+      tracingOrigins: ['localhost', 'my-site-url.com', /^\//]
+    })
   ],
   logErrors: true,
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
+  tracesSampleRate: 1.0
+})
 
 new Vue({
   el: '#app',
