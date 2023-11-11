@@ -1,5 +1,5 @@
 # 第一阶段：用 node 镜像安装依赖和构建项目
-FROM node:latest as builder
+FROM node:16.16.0 as builder
 
 WORKDIR /app
 COPY package.json yarn.lock ./
