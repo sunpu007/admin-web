@@ -1,6 +1,5 @@
 'use strict'
 const path = require('path')
-const SentryPlugin = require('@sentry/webpack-plugin')
 const defaultSettings = require('./src/settings.js')
 const UploadSourceMapWebpackPlugin = require('./build/UploadSourceMapWebpackPlugin');
 
@@ -137,18 +136,5 @@ module.exports = {
           config.optimization.runtimeChunk('single')
         }
       )
-
-    if (process.env.NODE_ENV === 'production') {
-      config.plugin('sentry').use(SentryPlugin, [{
-        // 指定忽略文件配置
-        ignoreFile: ['node_modules', '.gitignore'],
-        // 指定上传目录
-        include: './dist',
-        // 指定sentry上传配置
-        configFile: './.sentryclirc',
-        // 保持与publicPath相符
-        urlPrefix: '/'
-      }])
-    }
   }
 }
