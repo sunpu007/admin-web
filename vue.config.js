@@ -2,6 +2,7 @@
 const path = require('path')
 const SentryPlugin = require('@sentry/webpack-plugin')
 const defaultSettings = require('./src/settings.js')
+const UploadSourceMapWebpackPlugin = require('./build/UploadSourceMapWebpackPlugin');
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -56,7 +57,14 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      new UploadSourceMapWebpackPlugin({
+        uploadUrl: '',
+        apiKey: '',
+        buildVersion: ''
+      })
+    ]
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload

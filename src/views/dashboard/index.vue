@@ -95,7 +95,11 @@ export default {
     createWebSocket() {
       try {
         if ('WebSocket' in window) {
-          this.ws = new WebSocket(`ws://${location.host}/ws`)
+          let url = `ws://${location.host}/ws`
+          if (location.protocol.startsWith('https')) {
+            url = `wss://${location.host}/ws`
+          }
+          this.ws = new WebSocket(url)
           this.lockReconnect = false
         }
         this.initEventHandle()
